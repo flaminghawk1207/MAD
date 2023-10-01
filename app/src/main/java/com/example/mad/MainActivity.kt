@@ -1,18 +1,12 @@
 package com.example.mad
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Button
 import androidx.annotation.RequiresApi
-import com.example.mad.databinding.ActivityMainBinding
+import androidx.appcompat.app.AppCompatActivity
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         vibrationMotor = VibrationMotor(this)
+        val intent = Intent(this, Map::class.java)
+        startActivity(intent)
 
         leftButton = findViewById(R.id.left_button)
         rightButton = findViewById(R.id.right_button)

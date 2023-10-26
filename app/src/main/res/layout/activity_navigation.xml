@@ -7,8 +7,8 @@
 
     <TextView
         android:id="@+id/directions"
-        android:layout_width="284dp"
-        android:layout_height="306dp"
+        android:layout_width="402dp"
+        android:layout_height="699dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

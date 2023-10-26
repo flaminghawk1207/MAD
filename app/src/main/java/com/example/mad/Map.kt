@@ -175,7 +175,10 @@ class Map : AppCompatActivity() {
                 }
 
                 val numericWords = arrayOf("zero", "one", "two", "three", "four", "five")
-                val index = numericWords.indexOf(choiceResult.lowercase())
+                val index = numericWords.indexOf(choiceResult.split(" ")[1].lowercase())
+
+                val numericStrings = arrayOf("0", "1", "2", "3", "4", "5")
+                val index_2 = numericStrings.indexOf(choiceResult.split(" ")[1].lowercase())
 
                 if (index != null && index >= 0 && index < placeNames.size) {
                     val chosenPlace = placeNames[index]
@@ -188,9 +191,20 @@ class Map : AppCompatActivity() {
                     i.putExtra("DestinationCoords", coordinates[index])
 
                     startActivity(i)
-                } else {
-                    microphone.startSpeechRecognition("Please tell the index")
+                } else if (index_2 != null && index_2 >= 0 && index_2 < placeNames.size){
+                        val chosenPlace = placeNames[index_2]
 
+                        MainActivity.speaker.speakOut("You chose : " + chosenPlace)
+
+                        // Start navigation intent.
+                        val i = Intent(this, Navigation::class.java)
+                        i.putExtra("CurrentCoords", currentCoordinate)
+                        i.putExtra("DestinationCoords", coordinates[index_2])
+
+                        startActivity(i)
+                }
+                else {
+                    microphone.startSpeechRecognition("Please tell the index")
                 }
             } else {
                 microphone.startSpeechRecognition("Please tell the index")

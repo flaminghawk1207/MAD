@@ -18,37 +18,36 @@ class Navigation : AppCompatActivity() {
         val currentCoordsString = intent.getStringExtra("CurrentCoords")!!.split(",")
         val destinationCoordsString = intent.getStringExtra("DestinationCoords")!!.split(",")
 
-        // Setup request queue for volley (reference code : https://google.github.io/volley/simple.html).
-        var queue = Volley.newRequestQueue(this)
+        // Setup request queue for volley.
+        val queue = Volley.newRequestQueue(this)
 
-        val url = "https://api.mapbox.com/directions/v5/mapbox/walking/$currentCoordsString[0]%2C$currentCoordsString[1]%3B$destinationCoordsString[0]%2C$destinationCoordsString[1]?alternatives=true&continue_straight=true&geometries=geojson&language=en&overview=full&steps=true&access_token=" + getString(R.string.mapbox_access_token)
+        val currentLat = currentCoordsString[1]
+        val currentLong = currentCoordsString[0]
 
-        // Request a string response from the provided URL.
+        val destLat = destinationCoordsString[1]
+        val destLong = destinationCoordsString[0]
+
+        val url = "https://api.mapbox.com/directions/v5/mapbox/walking/$currentLat%2C$currentLong%3B$destLat%2C$destLong?alternatives=true&continue_straight=true&geometries=geojson&language=en&overview=full&steps=true&access_token=" + getString(R.string.mapbox_access_token)
+
+        // Request a JSON response from the provided URL.
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 val routes = response.getJSONArray("routes")
                 val route = routes.getJSONObject(0)
 
-                val weightName = route.getString("weight_name")
-                val duration = route.getDouble("duration")
-                val distance = route.getDouble("distance")
-
                 val steps = route.getJSONArray("legs").getJSONObject(0).getJSONArray("steps")
 
-                var directionsString = "Weight Name: $weightName\nDuration: $duration\nDistance: $distance\n\nDirections:\n"
+                val directionsList = ArrayList<String>()
 
                 for (i in 0 until steps.length()) {
                     val step = steps.getJSONObject(i)
-                    val name = step.getString("name")
-                    val stepDuration = step.getDouble("duration")
-                    val stepDistance = step.getDouble("distance")
-
-                    directionsString += "Step $i: Name: $name, Duration: $stepDuration, Distance: $stepDistance\n"
+                    val maneuver = step.getJSONObject("maneuver")
+                    val instruction = maneuver.getString("instruction")
+                    directionsList.add(instruction)
                 }
 
-                val directions = findViewById<TextView>(R.id.directions)
-                directions.text = directionsString
+                displayDirections(directionsList)
             },
             { error ->
                 // Handle error
@@ -56,5 +55,11 @@ class Navigation : AppCompatActivity() {
         )
 
         queue.add(jsonRequest)
+    }
+
+    private fun displayDirections(directionsList: List<String>) {
+        val directionsTextView = findViewById<TextView>(R.id.directions)
+        val directionsText = directionsList.joinToString("\n")
+        directionsTextView.text = directionsText
     }
 }

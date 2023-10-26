@@ -11,6 +11,6 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!-- Put your access token under this (the public one).-->
-    <string name="mapbox_access_token">pk.eyJ1IjoidGFydW5yIiwiYSI6ImNsbjZ4NzR6cjBsejMyaWp0b2g4bnc4eHQifQ.laPj-90SZU3jpT_1bdGPcA</string>
+    <string name="mapbox_access_token">PUT YOUR API TOKEN HERE (PUBLIC) </string>
 
 </resources>

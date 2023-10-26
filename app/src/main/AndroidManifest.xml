@@ -36,6 +36,8 @@
         <activity android:name=".Microphone">
         </activity>
 
+        <activity android:name=".Navigation"/>
+
     </application>
 
 </manifest>

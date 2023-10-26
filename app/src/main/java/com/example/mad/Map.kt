@@ -1,6 +1,7 @@
 package com.example.mad
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.mad.utils.LocationPermissionHelper
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.maps.CameraOptions
@@ -28,6 +32,10 @@ import java.lang.ref.WeakReference
  */
 private val PERMISSION_REQUEST_CODE = 123
 class Map : AppCompatActivity() {
+    private lateinit var microphone: Microphone
+    private val placeNames = ArrayList<String>()
+    private val coordinates = ArrayList<String>()
+    private var currentCoordinate = String()
 
     private lateinit var locationPermissionHelper: LocationPermissionHelper
 
@@ -38,6 +46,9 @@ class Map : AppCompatActivity() {
     private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener { point ->
         val latitude = point.latitude()
         val longitude = point.longitude()
+
+        currentCoordinate = "$latitude,$longitude".toString()
+
         Log.d("Location", "Latitude: $latitude, Longitude: $longitude")
 
         // Update camera position
@@ -82,11 +93,112 @@ class Map : AppCompatActivity() {
         }
         mapView = findViewById(R.id.mapView)
 
+
+        // Setup the microphone
+        microphone = Microphone(this)
+
+        // Retrieve the destination location from the Intent
+        val destinationLocation = intent.getStringExtra("destinationLocation")
+
+        // Send a API Request to the Geocoding API of mapbox to get all matching locations.
+        // Setup request queue for volley (reference code : https://google.github.io/volley/simple.html).
+        var queue = Volley.newRequestQueue(this)
+
+        val url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + destinationLocation + ".json?proximity=ip&access_token=" + getString(R.string.mapbox_access_token);
+        // Request a string response from the provided URL.
+        val jsonRequest = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                val featureCollection = response.getJSONArray("features")
+                for (i in 0 until featureCollection.length()) {
+                    val feature = featureCollection.getJSONObject(i)
+                    val geometry = feature.getJSONObject("geometry")
+                    val coordinates = geometry.getJSONArray("coordinates")
+                    val latitude = coordinates.getDouble(1)
+                    val longitude = coordinates.getDouble(0)
+                    val coordinateString = "$latitude,$longitude"
+                    val placeName = feature.getString("place_name");
+                    placeNames.add(placeName)
+                    this.coordinates.add(coordinateString)
+                }
+
+                // Speak these to the user. The user response will be an index.
+                MainActivity.speaker.speakOut("Please say the index of the correct destination, starting from index 0")
+
+                var i = 0
+                // For now, only speak the first 2 locations.
+                for (place in placeNames) {
+                    val index = i.toString()
+                    if (i == 2) break;
+                    MainActivity.speaker.speakOut("Index $index")
+                    MainActivity.speaker.speakOut(place)
+                    i++
+                }
+
+
+                // After speaking all locations, start speech recognition
+                microphone.startSpeechRecognition("Please tell the index")
+            },
+            { error ->
+                // Handle error
+            }
+        )
+
+        queue.add(jsonRequest)
+
         locationPermissionHelper = LocationPermissionHelper(WeakReference(this))
         locationPermissionHelper.checkPermissions {
             onMapReady()
         }
+
+
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == MainActivity.MICROPHONE_REQUEST_CODE) {
+            val choiceResult = microphone.handleSpeechRecognitionResult(requestCode, resultCode, data)
+
+            if (choiceResult != null) {
+                if (choiceResult.equals("Repeat", ignoreCase = true)) {
+                    MainActivity.speaker.speakOut("Please say the index of the correct destination, starting from index 0")
+                    var i = 0
+                    for (place in placeNames) {
+                        MainActivity.speaker.speakOut("Index " + i.toString())
+                        MainActivity.speaker.speakOut(place)
+                        i = i + 1;
+                    }
+
+                    microphone.startSpeechRecognition("Please tell the index")
+                    return
+                }
+
+                val numericWords = arrayOf("zero", "one", "two", "three", "four", "five")
+                val index = numericWords.indexOf(choiceResult.lowercase())
+
+                if (index != null && index >= 0 && index < placeNames.size) {
+                    val chosenPlace = placeNames[index]
+
+                    MainActivity.speaker.speakOut("You chose : " + chosenPlace)
+
+                    // Start navigation intent.
+                    val i = Intent(this, Navigation::class.java)
+                    i.putExtra("CurrentCoords", currentCoordinate)
+                    i.putExtra("DestinationCoords", coordinates[index])
+
+                    startActivity(i)
+                } else {
+                    microphone.startSpeechRecognition("Please tell the index")
+
+                }
+            } else {
+                microphone.startSpeechRecognition("Please tell the index")
+
+            }
+        }
+    }
+
 
     private fun onMapReady() {
         mapView.getMapboxMap().setCamera(

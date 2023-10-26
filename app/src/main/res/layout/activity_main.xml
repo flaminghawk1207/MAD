@@ -44,4 +44,14 @@
         android:layout_marginEnd="-9dp"
         android:gravity="bottom"
         android:text="View Map" />
+
+    <Button
+        android:id="@+id/TTS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="269dp"
+        android:text="TTS" />
 </RelativeLayout>

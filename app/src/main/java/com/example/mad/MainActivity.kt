@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
+
+    private lateinit var speaker: Speaker
+
     private lateinit var vibrationMotor: VibrationMotor
 
     private lateinit var microphoneButton: Button
@@ -19,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var leftButton: Button
     private lateinit var rightButton: Button
+
+    private lateinit var ttsButton: Button
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         vibrationMotor = VibrationMotor(this)
 
         microphoneButton = findViewById(R.id.microphone_button)
+
+        speaker = Speaker(this)
 
         mapButton = findViewById(R.id.map_button)
 
@@ -52,5 +59,11 @@ class MainActivity : AppCompatActivity() {
             var microphoneIntent = Intent(this, Microphone::class.java)
             this.startActivity(microphoneIntent)
         }
+
+        ttsButton = findViewById(R.id.TTS)
+        ttsButton.setOnClickListener {
+            speaker.speakOut("Hello, This is App Dev");
+        }
+
     }
 }

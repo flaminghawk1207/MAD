@@ -1,58 +1,74 @@
 package com.example.mad
 
+import Speaker
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import com.example.mad.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private var destinationLocation: String? = null
+    private var confirmationRequested: Boolean = false
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
-
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
 
-        setSupportActionBar(binding.toolbar)
+        // Initialize core components.
+        micrphone = Microphone(this)
+        speaker = Speaker(this)
+        vibrationMotor = VibrationMotor(this)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        val application_begin_button = findViewById<Button>(R.id.fullscreen_start_button)
+        application_begin_button.setOnClickListener {
+            speaker.speakOut("Please enter the destination location")
+            micrphone.startSpeechRecognition("Please enter the destination location")
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        if (requestCode == MICROPHONE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                if (!confirmationRequested) {
+                    destinationLocation = micrphone.handleSpeechRecognitionResult(requestCode, resultCode, data)
+                    if (destinationLocation != null) {
+
+                        speaker.speakOut("Your desired destination is " + destinationLocation!! + ". Is this correct?")
+
+                        micrphone.startSpeechRecognition("Please say 'yes' or 'no' for confirmation")
+                        confirmationRequested = true
+                    }
+                } else {
+                    val confirmationResult = micrphone.handleSpeechRecognitionResult(requestCode, resultCode, data)
+
+                    if (confirmationResult != null) {
+                        if (confirmationResult.equals("yes", ignoreCase = true)) {
+                            speaker.speakOut("Thank you.")
+                            // Go to the map activity.
+                            val i = Intent(this, Map::class.java)
+                            i.putExtra("destinationLocation",destinationLocation)
+                            startActivity(i)
+                        } else  {
+                            speaker.speakOut("I'm sorry. Please enter the correct destination location.")
+                            micrphone.startSpeechRecognition("Please enter the destination location")
+                            confirmationRequested = false
+                        }
+                    }
+                }
+            }
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+    companion object {
+        public const val MICROPHONE_REQUEST_CODE = 102
+        lateinit var micrphone: Microphone
+        lateinit var speaker: Speaker
+        lateinit var vibrationMotor: VibrationMotor
     }
 }

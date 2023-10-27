@@ -7,6 +7,7 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -98,6 +99,35 @@ class Navigation : AppCompatActivity() {
                         value.announcement,
                         voiceInstructionsPlayerCallback
                     )
+
+                    val announcementString = value.announcement.announcement;
+
+                    // Examples of values announcementString can take:
+                    // Walk east on the walkway.
+                    // Turn left onto the crosswalk.
+                    // Turn right onto the walkway.
+                    // Turn left onto the walkway.
+                    // Turn right onto the crosswalk.
+                    // Turn right onto the walkway.
+                    // Keep left at the fork.
+                    // You have arrived at your destination."
+
+                    // We can search the announcementString for "Walk", "Turn Left", "Turn Right", etc and send vibration signals.
+                    // We are checking if Walk is not a part of the announcement because Mapbox sometimes has announcements such as "Walk .... THEN turn right on ...."
+                    // For visualization purposes we only want to keep track of immediate Turn left / right signals.
+                    if (!announcementString.contains("Walk") && announcementString.contains("Turn") || announcementString.contains("turn")) {
+                        if (announcementString.contains("Left") || announcementString.contains("left")) {
+                            MainActivity.vibrationMotor.vibrateSingle()
+                            findViewById<TextView>(R.id.user_action_notification_text_view).text = "LEFT"
+                        }
+                        else if (!announcementString.contains("Walk") && announcementString.contains("Right") || announcementString.contains("right")) {
+                            MainActivity.vibrationMotor.vibrateDouble()
+                            findViewById<TextView>(R.id.user_action_notification_text_view).text = "RIGHT"
+                        }
+                    }
+                    else if (announcementString.contains("Arrived") || announcementString.contains("arrived")) {
+                        findViewById<TextView>(R.id.user_action_notification_text_view).text = "REACHED DESTINATION"
+                    }
                 }
             )
         }
@@ -218,6 +248,7 @@ class Navigation : AppCompatActivity() {
                 this.route = directionsRoute.toNavigationRoute(RouterOrigin.Custom())
             },
             { error ->
+                val err = error.toString()
             }
         )
 
@@ -273,6 +304,8 @@ class Navigation : AppCompatActivity() {
 
     private fun replayOriginLocation() {
         // note(rtarun9) : Lat and Long are interchanged in a lot of places, must be changed.
+
+        mapboxReplayer.playbackSpeed(5.0)
         mapboxReplayer.pushEvents(
             listOf(
                 ReplayRouteMapper.mapToUpdateLocation(
@@ -282,7 +315,6 @@ class Navigation : AppCompatActivity() {
             )
         )
         mapboxReplayer.playFirstLocation()
-        mapboxReplayer.playbackSpeed(30.0)
     }
 
     private fun updateCamera(point: Point, bearing: Double? = null) {

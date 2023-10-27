@@ -27,9 +27,7 @@ import com.mapbox.maps.plugin.locationcomponent.location
 import java.lang.ref.WeakReference
 
 // From : https://github.com/mapbox/mapbox-maps-android/blob/v10.16.0/app/src/main/java/com/mapbox/maps/testapp/examples/LocationTrackingActivity.kt
-/**
- * Tracks the user location on screen, simulates a navigation session.
- */
+
 private val PERMISSION_REQUEST_CODE = 123
 class Map : AppCompatActivity() {
     private lateinit var microphone: Microphone

@@ -13,7 +13,7 @@ class Speaker(context: Context) : OnInitListener, TextToSpeech.OnUtteranceComple
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             val result = tts.setLanguage(Locale.US)
-
+            tts.setSpeechRate(2.0f)
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "The Language is not supported!")
             }

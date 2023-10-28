@@ -28,6 +28,12 @@ class MainActivity : AppCompatActivity() {
             speaker.speakOut("Please enter the destination location")
             micrphone.startSpeechRecognition("Please enter the destination location")
         }
+
+        val object_detection_button = findViewById<Button>(R.id.object_detection_activity)
+        object_detection_button.setOnClickListener {
+            val i = Intent(this, ObjectDetectionActivity::class.java)
+            startActivity(i)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

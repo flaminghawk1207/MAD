@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
 class MainActivity : AppCompatActivity() {
     private var destinationLocation: String? = null
     private var confirmationRequested: Boolean = false

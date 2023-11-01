@@ -95,6 +95,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             currentMoveDirection = "Continue"
         }
 
+        val finalRectContainsOrIntersects = mutableListOf<Boolean>(false, false, false, false, false);
+
         for (result in results) {
             val boundingBox = result.boundingBox
 
@@ -130,29 +132,40 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             // Detecting if any of the screenRects contain / intersect the object.
             val rectContainsOrIntersects = mutableListOf<Boolean>();
             for (rect in screenRects) {
-                if (rect.contains(drawableRect) || rect.intersect(drawableRect)) {
+                if (rect.contains(drawableRect) || rect.intersect(drawableRect) || drawableRect.contains(rect)) {
                     rectContainsOrIntersects += true
                 } else {
                     rectContainsOrIntersects += false
                 }
             }
 
-            if (rectContainsOrIntersects[1]  && rectContainsOrIntersects[2] && rectContainsOrIntersects[3]) {
-                currentMoveDirection = "STOP"
+            for (i in 0..4) {
+                finalRectContainsOrIntersects[i] = finalRectContainsOrIntersects[i] || rectContainsOrIntersects[i];
             }
-            else {
-                if (rectContainsOrIntersects[1] && !rectContainsOrIntersects[3]) {
-                    currentMoveDirection = "RIGHT"
-                } else if (rectContainsOrIntersects[3] && !rectContainsOrIntersects[1]) {
-                    currentMoveDirection = "LEFT"
-                } else if (rectContainsOrIntersects[2] && !rectContainsOrIntersects[3]) {
-                    currentMoveDirection = "RIGHT"
-                } else if (rectContainsOrIntersects[2] && !rectContainsOrIntersects[1]) {
-                    currentMoveDirection = "LEFT"
-                }
-                else if (!rectContainsOrIntersects[1]  && !rectContainsOrIntersects[2] && !rectContainsOrIntersects[3]) {
-                    currentMoveDirection = "CONTINUE"
-                }
+        }
+
+        if (finalRectContainsOrIntersects[1]  && finalRectContainsOrIntersects[2] && finalRectContainsOrIntersects[3]) {
+            currentMoveDirection = "STOP"
+
+            if (!finalRectContainsOrIntersects[0]) {
+                currentMoveDirection = "LEFT";
+            }
+            else if (!finalRectContainsOrIntersects[4]) {
+                currentMoveDirection = "RIGHT";
+            }
+        }
+        else {
+            if (finalRectContainsOrIntersects[1] && !finalRectContainsOrIntersects[3]) {
+                currentMoveDirection = "RIGHT"
+            } else if (finalRectContainsOrIntersects[3] && !finalRectContainsOrIntersects[1]) {
+                currentMoveDirection = "LEFT"
+            } else if (finalRectContainsOrIntersects[2] && !finalRectContainsOrIntersects[3]) {
+                currentMoveDirection = "RIGHT"
+            } else if (finalRectContainsOrIntersects[2] && !finalRectContainsOrIntersects[1]) {
+                currentMoveDirection = "LEFT"
+            }
+            else if (!finalRectContainsOrIntersects[1]  && !finalRectContainsOrIntersects[2] && !finalRectContainsOrIntersects[3]) {
+                currentMoveDirection = "CONTINUE"
             }
         }
 
@@ -160,7 +173,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     }
 
     fun drawMoveDirection(canvas: Canvas) {
+        textPaint.setColor(Color.BLACK)
         canvas.drawText(currentMoveDirection, 10f, canvas.height / 2f, textPaint)
+        textPaint.setColor(Color.WHITE)
     }
     fun setResults(
       detectionResults: MutableList<Detection>,

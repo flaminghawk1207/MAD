@@ -130,7 +130,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             // Detecting if any of the screenRects contain / intersect the object.
             val rectContainsOrIntersects = mutableListOf<Boolean>();
             for (rect in screenRects) {
-                if (rect.contains(drawableRect) || rect.intersect(drawableRect)) {
+                if (rect.contains(drawableRect) || rect.intersect(drawableRect) || drawableRect.intersect(rect)) {
                     rectContainsOrIntersects += true
                 } else {
                     rectContainsOrIntersects += false
@@ -139,6 +139,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             if (rectContainsOrIntersects[1]  && rectContainsOrIntersects[2] && rectContainsOrIntersects[3]) {
                 currentMoveDirection = "STOP"
+
+                if (!rectContainsOrIntersects[0]) {
+                    currentMoveDirection = "LEFT";
+                }
+                if (!rectContainsOrIntersects[4]) {
+                    currentMoveDirection = "RIGHT";
+                }
             }
             else {
                 if (rectContainsOrIntersects[1] && !rectContainsOrIntersects[3]) {

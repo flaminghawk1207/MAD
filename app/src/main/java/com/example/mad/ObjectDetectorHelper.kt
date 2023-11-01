@@ -21,6 +21,7 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import org.tensorflow.lite.gpu.CompatibilityList
+import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.Rot90Op
@@ -29,11 +30,11 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import org.tensorflow.lite.task.vision.detector.ObjectDetector
 
 class ObjectDetectorHelper(
-  var threshold: Float = 0.5f,
+  var threshold: Float = 0.65f,
   var numThreads: Int = 2,
   var maxResults: Int = 3,
   var currentDelegate: Int = 0,
-  var currentModel: Int = MODEL_EFFICIENTDETV0,
+  var currentModel: Int = MODEL_YOLO,
   val context: Context,
   val objectDetectorListener: DetectorListener?
 ) {
@@ -89,6 +90,7 @@ class ObjectDetectorHelper(
                 MODEL_EFFICIENTDETV0 -> "efficientdet-lite0.tflite"
                 MODEL_EFFICIENTDETV1 -> "efficientdet-lite1.tflite"
                 MODEL_EFFICIENTDETV2 -> "efficientdet-lite2.tflite"
+                MODEL_YOLO -> "lite-model_yolo-v5-tflite_tflite_model_1.tflite"
                 else -> "mobilenetv1.tflite"
             }
 
@@ -115,10 +117,18 @@ class ObjectDetectorHelper(
         // Create preprocessor for the image.
         // See https://www.tensorflow.org/lite/inference_with_metadata/
         //            lite_support#imageprocessor_architecture
-        val imageProcessor =
+        var imageProcessor =
             ImageProcessor.Builder()
                 .add(Rot90Op(-imageRotation / 90))
                 .build()
+
+        if (currentModel == MODEL_YOLO) {
+            imageProcessor =
+                ImageProcessor.Builder()
+                    .add(Rot90Op(-imageRotation / 90))
+                    .add(NormalizeOp(0f, 255f))
+                    .build()
+        }
 
         // Preprocess the image and convert it into a TensorImage for detection.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
@@ -150,5 +160,6 @@ class ObjectDetectorHelper(
         const val MODEL_EFFICIENTDETV0 = 1
         const val MODEL_EFFICIENTDETV1 = 2
         const val MODEL_EFFICIENTDETV2 = 3
+        const val MODEL_YOLO = 4
     }
 }

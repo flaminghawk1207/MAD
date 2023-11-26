@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
 class MainActivity : AppCompatActivity() {
     private var destinationLocation: String? = null
     private var confirmationRequested: Boolean = false
@@ -23,10 +22,26 @@ class MainActivity : AppCompatActivity() {
         speaker = Speaker(this)
         vibrationMotor = VibrationMotor(this)
 
+    
         val application_begin_button = findViewById<Button>(R.id.fullscreen_start_button)
         application_begin_button.setOnClickListener {
             speaker.speakOut("Please enter the destination location")
             micrphone.startSpeechRecognition("Please enter the destination location")
+        }
+
+        val preset_navigation_simulatiion_button = findViewById<Button>(R.id.preset_simulation_button).setOnClickListener {
+            val i = Intent(this, Navigation::class.java)
+            i.putExtra("CurrentCoords", "40.782027,-74.037398")
+            i.putExtra("DestinationCoords", "40.782658,-74.035202")
+
+            startActivity(i)
+        }
+
+
+        val object_detection_button = findViewById<Button>(R.id.object_detection_activity)
+        object_detection_button.setOnClickListener {
+            val i = Intent(this, ObjectDetectionActivity::class.java)
+            startActivity(i)
         }
     }
 

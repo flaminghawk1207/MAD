@@ -1,0 +1,75 @@
+[33mcommit 2ffc789b27860916bc66af5da192ba3df93b19a2[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Fri Oct 27 09:20:40 2023 +0530
+
+    Added voice guided navigation simulation to Navigation activity
+    
+    The Navigation Activity uses a replay engine and MapBox's speech API to guide the users to thier destination.
+    We used a existing mapbox example application as reference for this functionality.
+    Reference : https://github.com/mapbox/mapbox-navigation-android-examples/blob/main/app/src/main/java/com/mapbox/navigation/examples/standalone/voice/PlayVoiceInstructionsActivity.kt.
+
+[33mcommit 7e1821c9174d90e012a9c1ac2861c6aaadd64cf9[m[33m ([m[1;31morigin/dev[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Thu Oct 26 19:00:49 2023 +0530
+
+    Fixed bugs in Navigation activity and minor changes to Map activity (while getting destination index from user)
+
+[33mcommit 129285ae02e1ab6959e8ff0de39a38c3699beff5[m[33m ([m[1;32mmain[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Thu Oct 26 14:17:08 2023 +0530
+
+    Basic app flow
+    
+    Detailed app flow:
+    (i) The app has a full screen button which when pressed will ask user for destination location
+    (ii) Upon confirmation from the user, the application then locates the current user position,
+    and tells the matched destination locations (precise).
+    (iii) Then, upon selection, the application will display the sequence of steps required to reach the destination.
+
+[33mcommit 191189d77afd21293f80c81e93bc8a7cdd7b65aa[m[33m ([m[1;31morigin/speaker_test[m[33m, [m[1;32mspeaker_test[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Thu Oct 26 06:58:37 2023 +0530
+
+    Added speaker module
+
+[33mcommit 85964722911b46f2f97ef441e25a9642987b3303[m[33m ([m[1;31morigin/mapbox_integration[m[33m, [m[1;32mmicrophone_test[m[33m, [m[1;32mmapbox_integration[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Wed Oct 25 13:32:51 2023 +0530
+
+    Integrated mapbox geocoding API to Microphone module
+
+[33mcommit dca08ef811cc64940b3fbeb00e97c35ab7d173be[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Tue Oct 3 19:15:54 2023 +0530
+
+    Added speech to text abstraction
+
+[33mcommit 7f5a30c0fac9bf592f4949abf899830f2593f624[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Sun Oct 1 12:01:13 2023 +0530
+
+    Added Maps abstraction (Using MapBox)
+
+[33mcommit 934f4c1d36011e89f31f1650517b7f9c49a8b32d[m[33m ([m[1;31morigin/vibration-test[m[33m, [m[1;32mvibration-test[m[33m)[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Sat Sep 30 18:36:22 2023 +0530
+
+    Added vibration motor class
+
+[33mcommit de9d8a172025ba7995a83c33aa7095d2228a8b07[m
+Author: rtarun9 <rtarun0913@gmail.com>
+Date:   Sun Sep 3 14:33:09 2023 +0530
+
+    Test with android vibration motor
+
+[33mcommit 94c0ef633ad4af5eeb68ad25a8d253a75f7dea97[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Anish Ayyagari <83899953+flaminghawk1207@users.noreply.github.com>
+Date:   Sun Sep 3 10:44:03 2023 +0530
+
+    Create README.md
+
+[33mcommit 7190b54de3538b33439104aabf304901f78d0624[m
+Author: Anish Ayyagari <83899953+flaminghawk1207@users.noreply.github.com>
+Date:   Sat Sep 2 00:05:45 2023 +0530
+
+    Initial commit

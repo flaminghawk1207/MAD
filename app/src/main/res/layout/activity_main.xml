@@ -7,14 +7,41 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/fullscreen_start_button"
+        android:id="@+id/object_detection_activity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:backgroundTint="#2C2C2C"
-        android:text="Press to begin application"
+        android:text="Object Detection Activity"
         android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/fullscreen_start_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/preset_simulation_button"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="2dp"
+        android:text="Press to begin application" />
+
+    <Button
+        android:id="@+id/preset_simulation_button"
+        android:layout_width="413dp"
+        android:layout_height="69dp"
+        android:layout_below="@+id/object_detection_activity"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:backgroundTint="#E91E63"
+        android:text="Run Navigation Preset Simulation" />
 </RelativeLayout>

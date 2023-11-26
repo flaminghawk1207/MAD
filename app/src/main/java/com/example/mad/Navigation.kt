@@ -245,7 +245,7 @@ class Navigation : AppCompatActivity() {
                 val route = directionsResponse.routes()[0]
                 val directionsRoute = route.toBuilder().routeOptions(routeOptions).build()
 
-                this.route = directionsRoute.toNavigationRoute(RouterOrigin.Custom())
+                    this.route = directionsRoute.toNavigationRoute(RouterOrigin.Custom())
             },
             { error ->
                 val err = error.toString()
@@ -257,7 +257,9 @@ class Navigation : AppCompatActivity() {
         findViewById<MapView>(R.id.mapView).getMapboxMap().loadStyleUri(NavigationStyles.NAVIGATION_DAY_STYLE) {
             findViewById<Button>(R.id.actionButton).visibility = View.VISIBLE
             findViewById<Button>(R.id.actionButton).setOnClickListener {
-                mapboxNavigation.setNavigationRoutes(listOf(this.route))
+                if (this::route.isInitialized) {
+                    mapboxNavigation.setNavigationRoutes(listOf(this.route))
+                }
             }
         }
 

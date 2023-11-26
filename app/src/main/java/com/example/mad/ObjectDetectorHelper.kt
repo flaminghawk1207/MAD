@@ -130,6 +130,8 @@ class ObjectDetectorHelper(
             inferenceTime,
             tensorImage.height,
             tensorImage.width)
+
+        Log.i("ObjectDetectorHelper", ("Inference time : " + inferenceTime.toString()).toString())
     }
 
     interface DetectorListener {

@@ -3,5 +3,5 @@
     <string name="action_settings">Settings</string>
 
     <!-- Put your access token under this (the public one).-->
-    <string name="mapbox_access_token">PUT YOUR API TOKEN HERE (PUBLIC) </string>
+    <string name="mapbox_access_token">PUT YOUR PUBLIC MAP BOX TOKEN HERE</string>
 </resources>
